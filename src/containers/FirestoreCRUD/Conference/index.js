@@ -1,19 +1,30 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import actions from '../../../redux/articles/actions';
-import Input, { Textarea } from '../../../components/uielements/input';
+import actions from '../../../redux/conferences/actions';
+import { Textarea } from '../../../components/uielements/input';
 import Select, {
   SelectOption as Option,
 } from '../../../components/uielements/select';
-import Modal from '../../../components/feedback/modal';
+
+import { Input } from 'antd';
+import Form from '../../../components/uielements/form';
+import Checkbox from '../../../components/uielements/checkbox';
+import Button from '../../../components/uielements/button';
+import Notification from '../../../components/notification';
+
+// import Modal from 'components/feedback/modal';
 import LayoutContentWrapper from '../../../components/utility/layoutWrapper.js';
 import Box from '../../../components/utility/box';
 import ContentHolder from '../../../components/utility/contentHolder';
 import Popconfirms from '../../../components/feedback/popconfirm';
+import fakeData from './models/types';
+
+
+import FormValidation from '../../../components/conference'
 import {
   ActionBtn,
   Fieldset,
-  Form,
+  // Form,
   Label,
   TitleWrapper,
   ButtonHolders,
@@ -21,50 +32,97 @@ import {
   ComponentTitle,
   TableWrapper,
   StatusTag,
-} from './articles.style';
+} from './conferences.style';
 import clone from 'clone';
 
-class Articles extends Component {
+const FormItem = Form.Item;
+
+
+const fakeDataList = new fakeData(5).getAll();
+
+class Conferences extends Component {
   componentDidMount() {
     this.props.loadFromFireStore();
   }
-  handleRecord = (actionName, article) => {
-    if (article.key && actionName !== 'delete') actionName = 'update';
-    this.props.saveIntoFireStore(article, actionName);
+  handleRecord = (actionName, conference) => {
+    if (conference.key && actionName !== 'delete') actionName = 'update';
+    this.props.saveIntoFireStore(conference, actionName);
   };
+
+  handleSubmit = e => {
+    e.preventDefault();
+    this.props.form.validateFieldsAndScroll((err, values) => {
+      if (!err) {
+        Notification(
+          'success',
+          'Received values of form',
+          JSON.stringify(values)
+        );
+      }
+    });
+  };
+
   resetRecords = () => {
     this.props.resetFireStoreDocuments();
   };
 
-  handleModal = (article = null) => {
-    this.props.toggleModal(article);
+  handleModal = (conference = null) => {
+    this.props.toggleModal(conference);
   };
 
   onRecordChange = (key, event) => {
-    let { article } = clone(this.props);
-    if (key) article[key] = event.target.value;
-    this.props.update(article);
+    let { conference } = clone(this.props);
+    if (key) conference[key] = event.target.value;
+    this.props.update(conference);
   };
 
   onSelectChange = (key, value) => {
-    let { article } = clone(this.props);
-    if (key) article[key] = value;
-    this.props.update(article);
+    let { conference } = clone(this.props);
+    if (key) conference[key] = value;
+    this.props.update(conference);
   };
 
   render() {
-    const { modalActive, articles } = this.props;
-    const { article } = clone(this.props);
+    const { modalActive, conferences } = this.props;
+    const { conference } = clone(this.props);
     const dataSource = [];
-    Object.keys(articles).map((article, index) => {
+
+    const formItemLayout = {
+      labelCol: {
+        xs: { span: 24 },
+        sm: { span: 6 },
+      },
+      wrapperCol: {
+        xs: { span: 24 },
+        sm: { span: 14 },
+      },
+    };
+    const tailFormItemLayout = {
+      wrapperCol: {
+        xs: {
+          span: 24,
+          offset: 0,
+        },
+        sm: {
+          span: 14,
+          offset: 6,
+        },
+      },
+    };
+
+    const listItems = fakeDataList.map((type) =>
+      <Option key={type.key} value={type.title}>{type.title}</Option>
+    );
+
+    Object.keys(conferences).map((conference, index) => {
       return dataSource.push({
-        ...articles[article],
-        key: article,
+        ...conferences[conference],
+        key: conference,
       });
     });
 
     const rowSelection = {
-      onChange: (selectedRowKeys, selectedRows) => {},
+      onChange: (selectedRowKeys, selectedRows) => { },
     };
 
     const columns = [
@@ -185,7 +243,7 @@ class Articles extends Component {
               </a>
 
               <Popconfirms
-                title="Are you sure to delete this article？"
+                title="Are you sure to delete this conference？"
                 okText="Yes"
                 cancelText="No"
                 placement="topRight"
@@ -203,10 +261,78 @@ class Articles extends Component {
 
     return (
       <LayoutContentWrapper>
-        <Box>
+
+        <Box style={!modalActive ? { display: "none" } : { display: "block" }}>
+          <ContentHolder style={{ marginTop: 0, overflow: 'hidden' }}>
+            <FormValidation />
+            {/* <Form onSubmit={this.handleSubmit}>
+              <Fieldset>
+                <Label>Title</Label>
+                <Input
+                  label="Title"
+                  placeholder="Enter Title"
+                  value={conference.title}
+                  onChange={this.onRecordChange.bind(this, 'title')}
+                />
+              </Fieldset>
+
+              <Fieldset>
+                <Label>Description</Label>
+                <Textarea
+                  label="Description"
+                  placeholder="Enter Description"
+                  rows={5}
+                  value={conference.description}
+                  onChange={this.onRecordChange.bind(this, 'description')}
+                />
+              </Fieldset>
+
+              <Fieldset>
+                <Label>Excerpt</Label>
+                <Textarea
+                  label="Excerpt"
+                  rows={5}
+                  placeholder="Enter excerpt"
+                  value={conference.excerpt}
+                  onChange={this.onRecordChange.bind(this, 'excerpt')}
+                />
+              </Fieldset>
+
+              <Fieldset>
+                <Label>Slug</Label>
+
+                <Input
+                  label="Slug"
+                  placeholder="Enter Slugs"
+                  value={conference.slug}
+                  onChange={this.onRecordChange.bind(this, 'slug')}
+                />
+              </Fieldset>
+
+              <Fieldset>
+                <Label>Status</Label>
+                <Select
+                  defaultValue={conference.status}
+                  placeholder="Enter Status"
+                  onChange={this.onSelectChange.bind(this, 'status')}
+                  style={{ width: '170px' }}
+                >
+                  {listItems}
+                </Select>
+              </Fieldset>
+              <FormItem {...tailFormItemLayout}>
+                <Button type="primary" htmlType="submit">
+                  Register
+          </Button>
+              </FormItem>
+            </Form> */}
+
+          </ContentHolder>
+        </Box>
+        <Box style={modalActive ? { display: "none" } : { display: "block" }}>
           <ContentHolder style={{ marginTop: 0, overflow: 'hidden' }}>
             <TitleWrapper>
-              <ComponentTitle>Articles</ComponentTitle>
+              <ComponentTitle>Conferences</ComponentTitle>
 
               <ButtonHolders>
                 <ActionBtn type="danger" onClick={this.resetRecords}>
@@ -222,72 +348,7 @@ class Articles extends Component {
               </ButtonHolders>
             </TitleWrapper>
 
-            <Modal
-              visible={modalActive}
-              onClose={this.props.toggleModal.bind(this, null)}
-              title={article.key ? 'Update Article' : 'Add New Article'}
-              okText={article.key ? 'Update Article' : 'Add Article'}
-              onOk={this.handleRecord.bind(this, 'insert', article)}
-              onCancel={this.props.toggleModal.bind(this, null)}
-            >
-              <Form>
-                <Fieldset>
-                  <Label>Title</Label>
-                  <Input
-                    label="Title"
-                    placeholder="Enter Title"
-                    value={article.title}
-                    onChange={this.onRecordChange.bind(this, 'title')}
-                  />
-                </Fieldset>
 
-                <Fieldset>
-                  <Label>Description</Label>
-                  <Textarea
-                    label="Description"
-                    placeholder="Enter Description"
-                    rows={5}
-                    value={article.description}
-                    onChange={this.onRecordChange.bind(this, 'description')}
-                  />
-                </Fieldset>
-
-                <Fieldset>
-                  <Label>Excerpt</Label>
-                  <Textarea
-                    label="Excerpt"
-                    rows={5}
-                    placeholder="Enter excerpt"
-                    value={article.excerpt}
-                    onChange={this.onRecordChange.bind(this, 'excerpt')}
-                  />
-                </Fieldset>
-
-                <Fieldset>
-                  <Label>Slug</Label>
-
-                  <Input
-                    label="Slug"
-                    placeholder="Enter Slugs"
-                    value={article.slug}
-                    onChange={this.onRecordChange.bind(this, 'slug')}
-                  />
-                </Fieldset>
-
-                <Fieldset>
-                  <Label>Status</Label>
-                  <Select
-                    defaultValue={article.status}
-                    placeholder="Enter Status"
-                    onChange={this.onSelectChange.bind(this, 'status')}
-                    style={{ width: '170px' }}
-                  >
-                    <Option value="draft">Draft</Option>
-                    <Option value="publish">Publish</Option>
-                  </Select>
-                </Fieldset>
-              </Form>
-            </Modal>
             <TableWrapper
               rowKey="key"
               size="2"
@@ -304,7 +365,7 @@ class Articles extends Component {
                 showTotal: (total, range) => {
                   return `Showing ${range[0]}-${range[1]} of ${
                     dataSource.length
-                  } Results`;
+                    } Results`;
                 },
               }}
             />
@@ -317,7 +378,7 @@ class Articles extends Component {
 
 export default connect(
   state => ({
-    ...state.Articles,
+    ...state.Conferences,
   }),
   actions
-)(Articles);
+)(Conferences);

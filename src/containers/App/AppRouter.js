@@ -101,6 +101,10 @@ const routes = [
     component: asyncComponent(() => import('../Todo')),
   },
   {
+    path: 'conferences',
+    component: asyncComponent(() => import('../FirestoreCRUD/Conference')),
+  },
+  {
     path: 'articles',
     component: asyncComponent(() => import('../FirestoreCRUD/Article')),
   },

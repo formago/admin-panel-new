@@ -8,8 +8,8 @@ const FormItem = Form.Item;
 
 class FormWIthSubmissionButton extends Component {
   state = {
-    confirmDirty: false,
-  };
+     confirmDirty: false 
+    };
   handleSubmit = e => {
     e.preventDefault();
     this.props.form.validateFieldsAndScroll((err, values) => {
@@ -48,24 +48,24 @@ class FormWIthSubmissionButton extends Component {
     const formItemLayout = {
       labelCol: {
         xs: { span: 24 },
-        sm: { span: 6 },
+        sm: { span: 6 }
       },
       wrapperCol: {
         xs: { span: 24 },
-        sm: { span: 14 },
-      },
+        sm: { span: 14 }
+      }
     };
     const tailFormItemLayout = {
       wrapperCol: {
         xs: {
           span: 24,
-          offset: 0,
+          offset: 0
         },
         sm: {
           span: 14,
-          offset: 6,
-        },
-      },
+          offset: 6
+        }
+      }
     };
     return (
       <Form onSubmit={this.handleSubmit}>
@@ -74,26 +74,28 @@ class FormWIthSubmissionButton extends Component {
             rules: [
               {
                 type: 'email',
-                message: 'The input is not valid E-mail!',
+                message: 'The input is not valid E-mail!'
               },
+              
+              
               {
                 required: true,
-                message: 'Please input your E-mail!',
-              },
-            ],
+                message: 'Please input your E-mail!'
+              }
+            ]
           })(<Input name="email" id="email" />)}
         </FormItem>
         <FormItem {...formItemLayout} label="Password" hasFeedback>
-          {getFieldDecorator('password', {
+                    {getFieldDecorator('password', {
             rules: [
               {
                 required: true,
-                message: 'Please input your password!',
+                message: 'Please input your password!'
               },
               {
-                validator: this.checkConfirm,
-              },
-            ],
+                validator: this.checkConfirm
+              }
+            ]
           })(<Input type="password" />)}
         </FormItem>
         <FormItem {...formItemLayout} label="Confirm Password" hasFeedback>
@@ -101,12 +103,12 @@ class FormWIthSubmissionButton extends Component {
             rules: [
               {
                 required: true,
-                message: 'Please confirm your password!',
+                message: 'Please confirm your password!'
               },
               {
-                validator: this.checkPassword,
-              },
-            ],
+                validator: this.checkPassword
+              }
+            ]
           })(<Input type="password" onBlur={this.handleConfirmBlur} />)}
         </FormItem>
         <FormItem {...tailFormItemLayout} style={{ marginBottom: 8 }}>
@@ -115,9 +117,9 @@ class FormWIthSubmissionButton extends Component {
             rules: [
               {
                 message: 'Please input your E-mail!',
-                required: true,
-              },
-            ],
+                required: true
+              }
+            ]
           })(
             <Checkbox>
               I have read the <a href="">agreement</a>

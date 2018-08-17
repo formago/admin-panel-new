@@ -87,13 +87,21 @@
     "uppy": "0.18.0"
   },
   "devDependencies": {
+    "babel-eslint": "^8.2.6",
     "babel-polyfill": "^6.26.0",
     "enzyme": "^3.2.0",
     "enzyme-to-json": "^3.3.0",
+    "eslint": "^5.3.0",
+    "eslint-config-airbnb-base": "^13.1.0",
+    "eslint-config-prettier": "^3.0.1",
+    "eslint-plugin-import": "^2.14.0",
+    "eslint-plugin-prettier": "^2.6.2",
+    "eslint-plugin-react": "^7.11.1",
     "google-maps-react": "^1.1.0",
     "leaflet": "^1.2.0",
     "leaflet-routing-machine": "^3.2.5",
     "leaflet.markercluster": "^1.0.6",
+    "prettier": "^1.14.2",
     "react-app-rewired": "1.4.0",
     "redux-mock-store": "^1.2.3"
   },
@@ -101,6 +109,7 @@
     "start": "react-app-rewired start",
     "build": "react-app-rewired --max_old_space_size=8192 build",
     "test": "react-app-rewired test --env=jsdom",
-    "eject": "react-scripts eject"
+    "eject": "react-scripts eject",
+    "lint": "eslint ."
   }
 }
